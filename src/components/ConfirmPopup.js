@@ -1,19 +1,20 @@
-import React from 'react';
-import PopupWithForm from './PopupWithForm';
+import React from "react";
+import PopupWithForm from "./PopupWithForm";
 
 function ConfirmPopup(props) {
   function handleSubmit(e) {
     e.preventDefault();
     props.onDeleteCardConfirm();
   }
-  return(
+  return (
     <PopupWithForm
       {...props}
-        name="card-delete"
-        title="Вы уверены?"
-        buttonTitle="Да"
-        buttonTitleIsLoading="Удаление..."
-        onSubmit={handleSubmit} />
-  )
+      name="card-delete"
+      title="Вы уверены?"
+      buttonTitle="Да"
+      buttonTitleIsLoading="Удаление..."
+      onSubmit={handleSubmit}
+    />
+  );
 }
 export default ConfirmPopup;

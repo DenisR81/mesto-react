@@ -4,6 +4,28 @@
 @import url("blocks/page/page.css");
 
 @import url("blocks/header/header.css");
+@import url("blocks/header/__nav/header__nav.css");
+@import url("blocks/header/__text/header__text.css");
+@import url("blocks/header/__nav-but/header__nav-but.css");
+@import url("blocks/header/__but/header__but.css");
+
+@import url("blocks/tooltip/tooltip.css");
+@import url("blocks/tooltip/__img/tooltip__img.css");
+@import url("blocks/tooltip/__name/tooltip__name.css");
+@import url("blocks/tooltip/__name-txt/tooltip__name-txt.css");
+
+@import url("blocks/login/login.css");
+@import url("blocks/login/__text/login__text.css");
+@import url("blocks/login/__input/login__input.css");
+@import url("blocks/login/__input-field/login__input-field.css");
+@import url("blocks/login/__but/login__but.css");
+@import url("blocks/login/__but-submit/login__but-submit.css");
+@import url("blocks/login/__but-submit/login__but-submit_mod.css");
+@import url("blocks/login/__form/login__form.css");
+
+@import url("blocks/registr/registr.css");
+@import url("blocks/registr/__text/register__text.css");
+@import url("blocks/registr/__link/register__link.css");
 
 @import url("blocks/logo/logo.css");
 
@@ -57,3 +79,4 @@
 @import url("blocks/popup/__error-message/popup__error-message.css");
 @import url("blocks/popup/__fields/popup__fields_type_error.css");
 @import url("blocks/popup/__error-message/popup__error-message_visible.css");
+@import url("blocks/popup/__tooltip/popup__tooltip.css");

@@ -1,4 +1,14 @@
 import React from "react";
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  Redirect,
+  useHistory,
+} from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
+import Login from "./Login";
+import Register from "./Register";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -9,6 +19,7 @@ import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { api } from "../utils/Api";
+import * as auth from "../utils/auth";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -26,6 +37,9 @@ function App() {
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = React.useState(false);
   const [idCardDelete, setIdCardDelete] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [userData, setUserData] = React.useState("");
+  const history = useHistory("");
 
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -140,20 +154,98 @@ function App() {
     setIsLoading(false);
   }
 
+  const handleLogin = ({ email, password }) => {
+    return auth.authorize(email, password).then((data) => {
+      if (data.token) {
+        localStorage.setItem("jwt", data.token);
+        tokenCheck();
+      }
+    });
+  };
+
+  const handleRegister = ({ email, password }) => {
+    return auth.register(email, password).then(() => {
+      setTimeout(() => {
+        history.push("/signin");
+      }, 3000);
+    });
+  };
+
+  const tokenCheck = () => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth.getContent(jwt).then((res) => {
+        setLoggedIn(true);
+        setUserData(res.data.email);
+        history.push("/");
+      });
+    }
+  };
+
+  const signOut = () => {
+    localStorage.removeItem("jwt");
+    setLoggedIn(false);
+    setUserData(null);
+    history.push("/signin");
+  };
+
+  React.useEffect(() => {
+    tokenCheck();
+  }, []);
+
+  /* React.useEffect(() => {
+    if (loggedIn) {
+      history.push("/");
+    }
+  }, [loggedIn, history]);*/
+
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        />
-        <Footer />
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/signin">
+              <Login
+                handleLogin={handleLogin}
+                tokenCheck={tokenCheck}
+                loggedIn={loggedIn}
+              />
+            </Route>
+            <Route exact path="/signup">
+              <div className="registerContainer">
+                <Register handleRegister={handleRegister} />
+              </div>
+            </Route>
+
+            <ProtectedRoute exact path="/" loggedIn={setLoggedIn}>
+              <Header
+                loggedIn={loggedIn}
+                userData={userData}
+                navText="Выйти"
+                navLink="signin"
+                signOut={signOut}
+              />
+
+              <Main
+                userData={userData}
+                signOut={signOut}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                cards={cards}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+              />
+              <Footer />
+            </ProtectedRoute>
+
+            <Route>
+              {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+            </Route>
+          </Switch>
+        </BrowserRouter>
+
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
